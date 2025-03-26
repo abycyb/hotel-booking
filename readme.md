@@ -1,1 +1,1 @@
-# Hotel Booking Logic Django
+# Hotel Booking Django

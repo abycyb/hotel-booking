@@ -1,0 +1,115 @@
+{% extends 'home/base.html' %}
+{% block title %}Welcome Back - Travel Booking System{% endblock title %}
+{% block css %}
+<style>
+.bg-login {
+    background: linear-gradient(rgba(0, 0, 20, 0.8), rgba(0, 0, 10, 0.8)),
+    url('/static/images/travel-background.jpg') center/cover no-repeat;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    background-color: #0a0a2a; /* Dark blue-black color */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .bg-login {
+        background: linear-gradient(rgba(0, 0, 20, 0.9), rgba(0, 0, 10, 0.9)),
+        url('/static/images/travel-background-mobile.jpg') center/cover no-repeat;
+    }
+    
+    .login-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock css %}
+{% block body %}
+<main class="container-fluid bg-login">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <h2 class="mb-3 text-white">Welcome Back</h2>
+                <p class="text-light">Sign in to continue your travel journey</p>
+            </div>
+            <form method="POST" class="travel-login-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label text-white">Email or Username</label>
+                    <input type="text"
+                           class="form-control border-radius-md"
+                           id="username"
+                           name="username"
+                           required
+                           placeholder="Enter your email or username">
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="password" class="form-label text-white">Password</label>
+                        <a href=""
+                           class="text-sm text-light">Forgot password?</a>
+                    </div>
+                    <input type="password"
+                           class="form-control border-radius-md"
+                           id="password"
+                           name="password"
+                           required
+                           placeholder="Enter your password">
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               value=""
+                               id="rememberMe">
+                        <label class="form-check-label text-light"
+                               for="rememberMe">
+                            Remember me
+                        </label>
+                    </div>
+                    <a href="{% url 'signup' %}"
+                       class="text-sm text-primary">Create account</a>
+                </div>
+                <div class="text-center">
+                    <button type="submit"
+                            class="w-100 btn btn-lg btn-primary border-radius-lg">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            <div class="divider my-4">
+                <hr class="my-2 bg-light">
+                <h6 class="text-center text-light my-0">Or sign in with</h6>
+                <hr class="my-2 bg-light">
+            </div>
+            <div class="text-center">
+                <a href="#"
+                   class="btn btn-outline-light border-radius-md me-2">
+                    <i class="fab fa-google me-2"></i> Google
+                </a>
+                <a href="#"
+                   class="btn btn-outline-light border-radius-md me-2">
+                    <i class="fab fa-facebook me-2"></i> Facebook
+                </a>
+                <a href="#"
+                   class="btn btn-outline-light border-radius-md">
+                    <i class="fab fa-apple me-2"></i> Apple
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock body %}

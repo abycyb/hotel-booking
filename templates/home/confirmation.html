@@ -1,0 +1,54 @@
+{% extends 'home/base.html' %}
+{% block title %}Booking Confirmed{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card text-center border-success">
+                <div class="card-header bg-success text-white">
+                    <h3><i class="fas fa-check-circle me-2"></i>Booking Confirmed!</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>Thank you for your booking!</h4>
+                        <p>Your reservation at {{ booking.hotel.hotel_name }} is confirmed.</p>
+                        {% if booking.booking_type == 'Pre Paid' %}
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Payment of Rs. {{ total_price }} received successfully!
+                        </div>
+                        {% endif %}
+                        <p>A confirmation email has been sent to <strong>{{ request.user.email }}</strong>.</p>
+                    </div>
+                    
+                    <div class="card mb-4 text-start">
+                        <div class="card-header">
+                            <h5>Booking Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Confirmation #:</strong> {{ booking.uid }}</p>
+                            <p><strong>Hotel:</strong> {{ booking.hotel.hotel_name }}</p>
+                            <p><strong>Check-in:</strong> {{ booking.start_date }}</p>
+                            <p><strong>Check-out:</strong> {{ booking.end_date }}</p>
+                            <p><strong>Nights:</strong> {{ nights }}</p>
+                            <p><strong>Booking Type:</strong> {{ booking.booking_type }}</p>
+                            <p><strong>Status:</strong> Confirmed</p>
+                            <p><strong>Total Amount:</strong> Rs. {{ total_price }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'booking_history' %}" class="btn btn-primary">
+                            View My Bookings
+                        </a>
+                        <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'home/base.html' %}
+{% block title %}Create Account - Travel Booking System{% endblock title %}
+{% block css %}
+<style>
+.bg-signup {
+    background: linear-gradient(rgba(0, 0, 20, 0.8), rgba(0, 0, 10, 0.8)),
+    url('/static/images/travel-background.jpg') center/cover no-repeat;
+}
+
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.signup-card {
+    background-color: #0a0a2a; /* Dark blue-black color */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .bg-signup {
+        background: linear-gradient(rgba(0, 0, 20, 0.9), rgba(0, 0, 10, 0.9)),
+        url('/static/images/travel-background-mobile.jpg') center/cover no-repeat;
+    }
+    
+    .signup-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock css %}
+{% block body %}
+<main class="container-fluid bg-signup">
+    <div class="signup-container">
+        <div class="signup-card">
+            <div class="text-center mb-4">
+                <h2 class="mb-3 text-white">Create Your Account</h2>
+                <p class="text-light">Join us to start your travel journey</p>
+            </div>
+            <form method="POST" action="{% url 'signup' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label text-white">Email Address</label>
+                    <input type="email" 
+                           class="form-control border-radius-md" 
+                           id="email" 
+                           name="email" 
+                           required
+                           placeholder="Enter your email">
+                    <div class="form-text text-light">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label text-white">Username</label>
+                    <input type="text" 
+                           class="form-control border-radius-md" 
+                           id="username" 
+                           name="username" 
+                           required
+                           placeholder="Choose a username">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label text-white">Password</label>
+                    <input type="password" 
+                           class="form-control border-radius-md" 
+                           id="password" 
+                           name="password" 
+                           required
+                           placeholder="Create a password">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" 
+                           class="form-check-input" 
+                           id="termsCheck" 
+                           checked
+                           required>
+                    <label class="form-check-label text-light" for="termsCheck">
+                        I accept all Terms & Conditions
+                    </label>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary border-radius-lg py-2">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            <div class="text-center mt-4">
+                <p class="text-light mb-0">Already have an account? 
+                    <a href="{% url 'signin' %}" class="text-primary">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock body %}

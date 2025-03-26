@@ -1,0 +1,99 @@
+{% extends 'home/base.html' %}
+{% block title %}
+{{hotel.hotel_name}}
+{% endblock title %}
+
+{% block css %}
+<style>
+    .list-group {
+        list-style-type: disc !important;
+    }
+    /* Add this new style for date validation messages */
+    .date-error {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="container mt-4">
+    <div id="carouselExampleControls" class="carousel slide w-75 m-auto" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for i in hotel.images.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="/media/{{i.images}}" class="d-block w-100" alt="{{ hotel.hotel_name }} image">
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    
+    <div class="mt-4 mb-4 w-75 m-auto">
+        <h1 class="fw-bold">{{hotel.hotel_name|title}}</h1>
+        <h4 class="mt-2 mb-3">Rs. {{hotel.hotel_price}} per night</h4>
+        
+        <h5>Amenities:</h5>
+        <ul class="list-group mb-3">
+            {% for i in hotel.amenities.all %}
+            <li class="list-group-item">{{i.amenity_name}}</li>
+            {% endfor %}
+        </ul>
+        
+        <div class="mt-4">
+            <h3>Description</h3>
+            <p>{{hotel.description}}</p>
+        
+            {% if request.user.is_authenticated %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h4>Book Your Stay</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'initiate_booking' hotel.uid %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Check In</label>
+                            <input type="date" name="startDate" class="form-control" id="startDate" 
+                                   min="{% now 'Y-m-d' %}" 
+                                   {% if startdate %}value="{{startdate}}"{% endif %} required>
+                            <div class="date-error">Please select a valid check-in date</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">Check Out</label>
+                            <input type="date" name="endDate" class="form-control" id="endDate" 
+                                   min="{% now 'Y-m-d' %}" 
+                                   {% if enddate %}value="{{enddate}}"{% endif %} required>
+                            <div class="date-error">Please select a valid check-out date</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" type="submit">
+                                Check Availability & Book
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info mt-4">
+                <a href="{% url 'signin' %}?next={{ request.path }}" class="btn btn-primary">
+                    Sign in to book this hotel
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

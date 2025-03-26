@@ -1,0 +1,44 @@
+{% extends 'home/base.html' %}
+{% block title %}{{ hotel.hotel_name }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- Carousel and hotel info remains the same -->
+    
+    {% if request.user.is_authenticated %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Book Your Stay</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'initiate_booking' hotel.uid %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="startDate" class="form-label">Check In</label>
+                        <input type="date" name="startDate" class="form-control" id="startDate" 
+                               min="{% now 'Y-m-d' %}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="endDate" class="form-label">Check Out</label>
+                        <input type="date" name="endDate" class="form-control" id="endDate" 
+                               min="{% now 'Y-m-d' %}" required>
+                    </div>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Check Availability
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+            Sign in to book this hotel
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

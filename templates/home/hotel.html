@@ -1,4 +1,6 @@
 {% extends 'home/base.html' %}
+{% load static %}
+
 {% block title %}
 {{hotel.hotel_name}}
 {% endblock title %}
@@ -8,11 +10,21 @@
     .list-group {
         list-style-type: disc !important;
     }
-    /* Add this new style for date validation messages */
+    .occupants-select {
+        margin-bottom: 1rem;
+    }
+    .room-calculation {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
     .date-error {
         color: #dc3545;
         font-size: 0.875em;
         margin-top: 0.25rem;
+    }
+    .hotel-img {
+        height: 400px;
+        object-fit: cover;
     }
 </style>
 {% endblock css %}
@@ -23,17 +35,15 @@
         <div class="carousel-inner">
             {% for i in hotel.images.all %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="/media/{{i.images}}" class="d-block w-100" alt="{{ hotel.hotel_name }} image">
+                <img src="/media/{{i.images}}" class="d-block w-100 hotel-img" alt="{{ hotel.hotel_name }} image">
             </div>
             {% endfor %}
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-            data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-            data-bs-slide="next">
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
@@ -42,6 +52,7 @@
     <div class="mt-4 mb-4 w-75 m-auto">
         <h1 class="fw-bold">{{hotel.hotel_name|title}}</h1>
         <h4 class="mt-2 mb-3">Rs. {{hotel.hotel_price}} per night</h4>
+        <p class="text-muted">Max occupancy: {{ hotel.max_occupancy_per_room }} guests per room ({{ hotel.room_count }} rooms available)</p>
         
         <h5>Amenities:</h5>
         <ul class="list-group mb-3">
@@ -55,37 +66,57 @@
             <p>{{hotel.description}}</p>
         
             {% if request.user.is_authenticated %}
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h4>Book Your Stay</h4>
+                {% if hotel and hotel.uid %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>Book Your Stay</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'initiate_booking' hotel_id=hotel.uid %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Check In</label>
+                                <input type="date" name="startDate" class="form-control" id="startDate" 
+                                       min="{% now 'Y-m-d' %}" 
+                                       {% if startdate %}value="{{startdate}}"{% endif %} required>
+                                <div class="date-error">Please select a valid check-in date</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">Check Out</label>
+                                <input type="date" name="endDate" class="form-control" id="endDate" 
+                                       min="{% now 'Y-m-d' %}" 
+                                       {% if enddate %}value="{{enddate}}"{% endif %} required>
+                                <div class="date-error">Please select a valid check-out date</div>
+                            </div>
+                            
+                            <div class="mb-3 occupants-select">
+                                <label for="occupants" class="form-label">Number of Guests</label>
+                                <select class="form-select" name="occupants" id="occupants" required>
+                                    {% for option in guest_options %}
+                                    <option value="{{ option.count }}" {% if option.count == 1 %}selected{% endif %}>
+                                        {{ option.display }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="room-calculation mt-1">
+                                    Maximum {{ hotel.max_occupancy_per_room }} guests per room
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-primary btn-lg" type="submit">
+                                    Check Availability & Book
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'initiate_booking' hotel.uid %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="startDate" class="form-label">Check In</label>
-                            <input type="date" name="startDate" class="form-control" id="startDate" 
-                                   min="{% now 'Y-m-d' %}" 
-                                   {% if startdate %}value="{{startdate}}"{% endif %} required>
-                            <div class="date-error">Please select a valid check-in date</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="endDate" class="form-label">Check Out</label>
-                            <input type="date" name="endDate" class="form-control" id="endDate" 
-                                   min="{% now 'Y-m-d' %}" 
-                                   {% if enddate %}value="{{enddate}}"{% endif %} required>
-                            <div class="date-error">Please select a valid check-out date</div>
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button class="btn btn-primary btn-lg" type="submit">
-                                Check Availability & Book
-                            </button>
-                        </div>
-                    </form>
+                {% else %}
+                <div class="alert alert-danger mt-4">
+                    Booking currently unavailable for this hotel
                 </div>
-            </div>
+                {% endif %}
             {% else %}
             <div class="alert alert-info mt-4">
                 <a href="{% url 'signin' %}?next={{ request.path }}" class="btn btn-primary">

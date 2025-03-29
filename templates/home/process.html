@@ -16,14 +16,6 @@
     .form-control.payment-input {
         background-color: rgba(255, 255, 255, 0.8);
     }
-    .auto-fill-btn {
-        cursor: pointer;
-    }
-    #confirmBtn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-
 </style>
 {% endblock %}
 
@@ -40,6 +32,7 @@
                     <p class="text-muted">
                         {{ start_date }} to {{ end_date }} ({{ nights }} night{{ nights|pluralize }})
                     </p>
+                    <p>Guests: {{ occupants }} ({{ required_rooms }} room{{ required_rooms|pluralize }})</p>
                     <hr>
                     
                     <form method="POST" id="bookingForm">
@@ -94,15 +87,11 @@
                                     <input type="text" class="form-control payment-input" name="card_name" 
                                            id="cardName" placeholder="John Doe" required>
                                 </div>
-                                
-                                <button type="button" class="btn btn-outline-secondary auto-fill-btn" id="autoFillBtn">
-                                    <i class="bi bi-magic"></i> Auto-fill Test Card
-                                </button>
                             </div>
                         </div>
                         
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg" id="confirmBtn">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 Confirm Booking
                             </button>
                         </div>
@@ -124,6 +113,8 @@
                         <li><strong>Check-in:</strong> {{ start_date }}</li>
                         <li><strong>Check-out:</strong> {{ end_date }}</li>
                         <li><strong>Nights:</strong> {{ nights }}</li>
+                        <li><strong>Guests:</strong> {{ occupants }}</li>
+                        <li><strong>Rooms:</strong> {{ required_rooms }}</li>
                     </ul>
                     <hr>
                     <div class="d-flex justify-content-between">
@@ -135,63 +126,4 @@
         </div>
     </div>
 </div>
-
-<!-- Payment Processing Modal -->
-<div class="modal fade" id="paymentProcessingModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Processing Payment</h5>
-            </div>
-            <div class="modal-body text-center">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Please wait while we process your payment...</p>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block javascript %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-fill test card details
-    document.getElementById('autoFillBtn').addEventListener('click', function() {
-        document.getElementById('cardNumber').value = '4242 4242 4242 4242';
-        document.getElementById('expiryDate').value = '12/25';
-        document.getElementById('cvv').value = '123';
-        document.getElementById('cardName').value = '{{ request.user.get_full_name|default:"Test User" }}';
-    });
-
-    // Show payment processing modal
-    document.getElementById('bookingForm').addEventListener('submit', function() {
-        const paymentModal = new bootstrap.Modal(document.getElementById('paymentProcessingModal'));
-        paymentModal.show();
-    });
-
-    // Toggle payment details based on payment method
-    const paymentRadios = document.querySelectorAll('input[name="booking_type"]');
-    const paymentDetails = document.getElementById('paymentDetails');
-    
-    function togglePaymentDetails() {
-        const selectedValue = document.querySelector('input[name="booking_type"]:checked').value;
-        paymentDetails.style.display = selectedValue === 'Pre Paid' ? 'block' : 'none';
-        
-        // Make payment fields required only for Pre Paid
-        const paymentInputs = paymentDetails.querySelectorAll('input[required]');
-        paymentInputs.forEach(input => {
-            input.required = selectedValue === 'Pre Paid';
-        });
-    }
-    
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', togglePaymentDetails);
-    });
-    
-    // Initialize
-    togglePaymentDetails();
-});
-</script>
 {% endblock %}
